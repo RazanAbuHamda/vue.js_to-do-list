@@ -34,6 +34,11 @@
     #list1 .select-input.form-control[readonly]:not([disabled]) {
         background-color: #fbfbfb;
     }
+    .task-done {
+        background-color: #98fb98 !important;
+    }
+
+
 </style>
 <section class="vh-100">
     <div class="container py-5 h-100" id="to-do-list">
@@ -85,7 +90,8 @@
                                     class="fas fa-sort-amount-down-alt ms-2"></i></a>
                         </div>
                         <div v-for="(task,index) in tasks">
-                            <ul class="list-group list-group-horizontal rounded-0 bg-transparent">
+                            <ul class="list-group list-group-horizontal rounded-0 bg-transparent"
+                                v-bind:class="{ 'task-done': task.done }">
                                 <li class="list-group-item d-flex align-items-center ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
                                     <div class="form-check">
                                         <input
@@ -100,17 +106,22 @@
                                         />
                                     </div>
                                 </li>
-                                <li class="list-group-item px-3 py-1 d-flex align-items-center flex-grow-1 border-0 bg-transparent">
+                                <li class="list-group-item px-3 py-1 d-flex align-items-center flex-grow-1 border-0 bg-transparent"
+                                    v-bind:style="{ 'background-color': task.done ? completedColor : '' }">
                                     <p class="lead fw-normal mb-0" v-if="!task.editMode">{{ task.words }}</p>
                                     <div v-else class="d-flex flex-row justify-content-end mb-1">
-                                        <input class="form-control form-control-lg" v-model="newValue" placeholder="{{task.words}}"/>
-                                        <button type="button" class="btn btn-primary" id="save-edited-task" @click="saveEditedTask(index)">Save</button>
+                                        <input class="form-control form-control-lg" v-model="newValue"
+                                               placeholder="{{task.words}}"/>//هان الموضوع بدو انتباه شوية صغيرة
+                                        <button type="button" class="btn btn-primary" id="save-edited-task"
+                                                @click="saveEditedTask(index)">Save
+                                        </button>
 
                                     </div>
                                 </li>
                                 <li class="list-group-item ps-3 pe-0 py-1 rounded-0 border-0 bg-transparent">
                                     <div class="d-flex flex-row justify-content-end mb-1">
-                                        <a href="#!" class="text-info" data-mdb-toggle="tooltip" title="Edit todo"  @click="editTask(index)"><i
+                                        <a href="#!" class="text-info" data-mdb-toggle="tooltip" title="Edit todo"
+                                           @click="editTask(index)"><i
                                                 class="fas fa-pencil-alt me-3"></i></a>
                                         <a href="#!" class="text-danger" data-mdb-toggle="tooltip"
                                            title="Delete todo" @click.stop="deleteTask(index)"><i
@@ -145,10 +156,17 @@
             newValue: '',
             num: 1,
             editMode: false,
+            done:false,
         },
         methods: {
             addTask: function () {
-                this.tasks.push({id: this.num, words: this.taskText, done: false, date: new Date(), editMode: this.editMode});
+                this.tasks.push({
+                    id: this.num,
+                    words: this.taskText,
+                    done: this.done,
+                    date: new Date().toJSON().slice(0, 10).replace(/-/g, '/'),
+                    editMode: this.editMode
+                });
                 this.taskText = '';
                 this.num++;
             },
@@ -157,17 +175,17 @@
             },
             editTask: function (index) {
                 this.tasks[index].editMode = true;
-                },
+            },
             saveEditedTask(index) {
                 this.tasks[index].words = this.newValue;
                 this.tasks[index].editMode = false;
             },
             checkCompletedTask(index) {
-                isChecked = this.tasks[index].done;
-                if(isChecked){
-                    this.taskText.styles={
-                        backgroundColor:lightgreen,
-                    }
+                isChecked = !this.tasks[index].done;
+                if (isChecked) {
+                    this.completedTasks.push(this.tasks[index]);
+                } else {
+                    this.completedTasks.splice(this.tasks[index], 1);
                 }
             }
 
@@ -175,5 +193,4 @@
     })
 </script>
 </body>
-
 </html>
