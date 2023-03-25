@@ -34,12 +34,14 @@
     #list1 .select-input.form-control[readonly]:not([disabled]) {
         background-color: #fbfbfb;
     }
+
     .task-done {
         background-color: #98fb98 !important;
     }
 
 
 </style>
+
 <section class="vh-100">
     <div class="container py-5 h-100" id="to-do-list">
         <div class="row d-flex justify-content-center align-items-center h-100">
@@ -68,6 +70,10 @@
                                         </div>
                                     </div>
                                 </div>
+                                <button type="button" class="btn btn-primary" @click.prevent="percentage">Compute
+                                    Completed Task Precentage
+                                </button>
+                                <p>Completion percentage: {{ completionPercentage }}%</p>
                             </div>
                         </div>
 
@@ -89,7 +95,7 @@
                             <a href="#!" style="color: #23af89;" data-mdb-toggle="tooltip" title="Ascending"><i
                                     class="fas fa-sort-amount-down-alt ms-2"></i></a>
                         </div>
-                        <div v-for="(task,index) in tasks">
+                        <div ref="taskList" v-for="(task,index) in tasks">
                             <ul class="list-group list-group-horizontal rounded-0 bg-transparent"
                                 v-bind:class="{ 'task-done': task.done }">
                                 <li class="list-group-item d-flex align-items-center ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
@@ -147,6 +153,8 @@
 <!-- MDB -->
 <script type="text/javascript" src="js/mdb.min.js"></script>
 <script type="text/javascript">
+    // import Sortable from 'sortablejs';
+
     var vm = new Vue({
         el: "#to-do-list",
         data: {
@@ -156,7 +164,8 @@
             newValue: '',
             num: 1,
             editMode: false,
-            done:false,
+            done: false,
+            percentageNum: 0,
         },
         methods: {
             addTask: function () {
@@ -187,9 +196,36 @@
                 } else {
                     this.completedTasks.splice(this.tasks[index], 1);
                 }
-            }
+            },
+            reorderTasks(event) {
+                const movedTask = this.tasks.splice(event.oldIndex, 1)[0];
+                this.tasks.splice(event.newIndex, 0, movedTask);
+            },
 
-        }
+        },
+        computed: {
+            completionPercentage() {
+                const total = this.tasks.length;
+                var completed = 0;
+                for (let i = 0; i < this.tasks.length; i++) {
+                    if (this.tasks[i].done) {
+                        completed++;
+                    }
+                }
+                if (total === 0) {
+                    return 0;
+                } else {
+                    return Math.round((completed / total) * 100);
+                }
+            }
+        },
+        mounted() {
+            const taskList = this.$refs.taskList;
+            new Sortable(taskList, {
+                animation: 150,
+                onEnd: this.reorderTasks
+            });
+        },
     })
 </script>
 </body>
