@@ -39,6 +39,10 @@
         background-color: #98fb98 !important;
     }
 
+    .task-cancel {
+        background-color: red !important;
+    }
+
 
 </style>
 
@@ -70,18 +74,15 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button type="button" class="btn btn-primary" @click.prevent="percentage">Compute
-                                    Completed Task Precentage
-                                </button>
-                                <p>Completion percentage: {{ completionPercentage }}%</p>
                             </div>
                         </div>
+                        <p>Completion percentage: {{ completionPercentage }}%</p>
 
                         <hr class="my-4">
 
                         <div class="d-flex justify-content-end align-items-center mb-4 pt-2 pb-3">
                             <p class="small mb-0 me-2 text-muted">Filter</p>
-                            <select class="select">
+                            <select class="select" v-model="selectedFilter" @change="updateTasks">
                                 <option value="1">All</option>
                                 <option value="2">Completed</option>
                                 <option value="3">Active</option>
@@ -95,9 +96,9 @@
                             <a href="#!" style="color: #23af89;" data-mdb-toggle="tooltip" title="Ascending"><i
                                     class="fas fa-sort-amount-down-alt ms-2"></i></a>
                         </div>
-                        <div ref="taskList" v-for="(task,index) in tasks">
+                        <div v-for="(task,index) in tasks">
                             <ul class="list-group list-group-horizontal rounded-0 bg-transparent"
-                                v-bind:class="{ 'task-done': task.done }">
+                                v-bind:class="[{'task-done': task.done}, {'task-cancel': task.cancel}]">
                                 <li class="list-group-item d-flex align-items-center ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
                                     <div class="form-check">
                                         <input
@@ -142,6 +143,7 @@
                                 </li>
                             </ul>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -159,12 +161,16 @@
         el: "#to-do-list",
         data: {
             tasks: [],
+            choosenArray: [],
+            selectedFilter: 1, // set the default selected option to "All"
             completedTasks: [],
+            canceledTasks: [],
             taskText: '',
             newValue: '',
             num: 1,
             editMode: false,
             done: false,
+            cancel: false,
             percentageNum: 0,
         },
         methods: {
@@ -173,8 +179,10 @@
                     id: this.num,
                     words: this.taskText,
                     done: this.done,
+                    cancel: this.cancel,
                     date: new Date().toJSON().slice(0, 10).replace(/-/g, '/'),
-                    editMode: this.editMode
+                    editMode: this.editMode,
+                    reminder: new Date(+new Date().setHours(0, 0, 0, 0) + 86400000).toLocaleDateString('fr-CA'),
                 });
                 this.taskText = '';
                 this.num++;
@@ -201,9 +209,29 @@
                 const movedTask = this.tasks.splice(event.oldIndex, 1)[0];
                 this.tasks.splice(event.newIndex, 0, movedTask);
             },
+            updateTasks() {
+                this.tasks = this.filteredTasks();
+            },
 
         },
         computed: {
+            filteredTasks() {
+                switch (this.selectedFilter) {
+                    case 1: // All
+                        return this.tasks;
+                    case 2: // Completed
+                        return this.tasks.filter(task => task.done);
+                    case 3: // Active
+                        return this.tasks.filter(task => !task.done);
+                    case 4: // Has due date
+                        return this.tasks.filter(task => task.date !== null);
+                    default:
+                        return this.tasks;
+                }
+            },
+            updateTasks() {
+                this.tasks = this.filteredTasks();
+            },
             completionPercentage() {
                 const total = this.tasks.length;
                 var completed = 0;
@@ -217,16 +245,28 @@
                 } else {
                     return Math.round((completed / total) * 100);
                 }
-            }
+            },
+            isPastDue: function () {
+                for (let i = 0; i < this.tasks.length; i++) {
+                    if (!this.tasks[i].done && this.tasks[i].reminder - this.tasks[i].date) {
+                        this.tasks[i].cancel = !this.tasks[i].cancel;
+                        this.canceledTasks.push(this.tasks[i]);
+                    } else {
+                        this.canceledTasks.splice(this.tasks[i], 1);
+                    }
+                }
+            },
+
         },
-        mounted() {
-            const taskList = this.$refs.taskList;
-            new Sortable(taskList, {
-                animation: 150,
-                onEnd: this.reorderTasks
-            });
-        },
-    })
+            mounted() {
+                setInterval(this.isPastDue, 60000); // call getCurrentTime every minute
+                const taskList = this.$refs.taskList;
+                new Sortable(taskList, {
+                    animation: 150,
+                    onEnd: this.reorderTasks
+                });
+            },
+        })
 </script>
 </body>
 </html>
