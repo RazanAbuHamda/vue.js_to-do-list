@@ -40,7 +40,7 @@
     }
 
     .task-cancel {
-        background-color: red !important;
+        background-color: #fe3939 !important;
     }
 
 
@@ -259,6 +259,7 @@
 
         },
             mounted() {
+            //هاي عملتها عشان كل دقيقة تستدعي الميثود الي بتفحص هل مر يوم كامل على المهمة عشان ألغيها ؟
                 setInterval(this.isPastDue, 60000); // call getCurrentTime every minute
                 const taskList = this.$refs.taskList;
                 new Sortable(taskList, {
