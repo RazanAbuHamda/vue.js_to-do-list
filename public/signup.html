@@ -54,7 +54,7 @@
                           type="text" 
                           id="fname" 
                           v-model="fname"
-                          class="form-control" 
+                          class="form-control form-control-lg" 
                         />
                         <label class="form-label" for="form3Example1">First name</label>
                       </div>
@@ -67,7 +67,7 @@
                           type="text" 
                           id="lname" 
                           v-model="lname"
-                          class="form-control" 
+                          class="form-control form-control-lg" 
                         />
                         <label class="form-label" for="form3Example2">Last name</label>
                       </div>
@@ -81,7 +81,7 @@
                       type="email" 
                       id="email" 
                       v-model="email"
-                      class="form-control" 
+                      class="form-control form-control-lg" 
                     />
                     <label class="form-label" for="form3Example3">Email address</label>
                   </div>
@@ -92,7 +92,7 @@
                       type="password" 
                       id="password" 
                       v-model="password"
-                      class="form-control" 
+                      class="form-control form-control-lg" 
                     />
                     <label class="form-label" for="form3Example4">Password</label>
                   </div>
@@ -132,6 +132,9 @@
       registerUser(){
         // using the API later to insert user's data into the database
       }
+    },
+    mounted(){
+      // this will check 
     }
   })
 </script>

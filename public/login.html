@@ -45,17 +45,27 @@
 
                 <form action="index.html">
                     <div class="form-outline form-dark mb-4">
-                        <input type="email" id="typeEmailX" class="form-control form-control-lg" />
+                        <input 
+                            type="email" 
+                            id="email" 
+                            v-model="email"
+                            class="form-control form-control-lg" 
+                        />
                         <label class="form-label" for="typeEmailX">Email</label>
                     </div>
     
                     <div class="form-outline form-dark mb-4">
-                        <input type="password" id="typePasswordX" class="form-control form-control-lg" />
+                        <input 
+                            type="password" 
+                            id="password" 
+                            v-model="password"
+                            class="form-control form-control-lg"
+                        />
                         <label class="form-label" for="typePasswordX">Password</label>
                     </div>
 
                     
-                    <button class="btn btn-outline-dark btn-lg px-5" type="submit">Login</button>
+                    <button @click="validateUser" class="btn btn-outline-dark btn-lg px-5">Login</button>
                     <br><br>
                 </form>                             
   
@@ -80,6 +90,15 @@
 <script>
     var vue = new Vue({
       el: "#login",
+      data:{
+        email:'',
+        password:''
+      },
+      methods:{
+        validateUser(){
+            // validate the uers through the incoming API
+        }
+      }
   
     })
   </script>
