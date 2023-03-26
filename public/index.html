@@ -96,8 +96,8 @@
                             <a href="#!" style="color: #23af89;" data-mdb-toggle="tooltip" title="Ascending"><i
                                     class="fas fa-sort-amount-down-alt ms-2"></i></a>
                         </div>
-                        <div v-for="(task,index) in tasks">
-                            <ul class="list-group list-group-horizontal rounded-0 bg-transparent"
+                        <div  class="task-list" v-for="(task,index) in filterTasks">
+                            <ul class="list-group list-group-horizontal rounded-0 bg-transparent "
                                 v-bind:class="[{'task-done': task.done}, {'task-cancel': task.cancel}]">
                                 <li class="list-group-item d-flex align-items-center ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
                                     <div class="form-check">
@@ -154,9 +154,8 @@
 
 <!-- MDB -->
 <script type="text/javascript" src="js/mdb.min.js"></script>
+<script src="path/to/vue-sortable.js"></script>
 <script type="text/javascript">
-    // import Sortable from 'sortablejs';
-
     var vm = new Vue({
         el: "#to-do-list",
         data: {
@@ -205,26 +204,22 @@
                     this.completedTasks.splice(this.tasks[index], 1);
                 }
             },
-            reorderTasks(event) {
-                const movedTask = this.tasks.splice(event.oldIndex, 1)[0];
-                this.tasks.splice(event.newIndex, 0, movedTask);
-            },
             updateTasks() {
                 this.tasks = this.filteredTasks();
             },
 
         },
         computed: {
-            filteredTasks() {
-                switch (this.selectedFilter) {
-                    case 1: // All
+            filterTasks: function() {
+                switch(this.selectedFilter) {
+                    case "1":
                         return this.tasks;
-                    case 2: // Completed
-                        return this.tasks.filter(task => task.done);
-                    case 3: // Active
+                    case "2":
+                        return this.completedTasks;
+                    case "3":
                         return this.tasks.filter(task => !task.done);
-                    case 4: // Has due date
-                        return this.tasks.filter(task => task.date !== null);
+                    case "4":
+                        return this.canceledTasks;
                     default:
                         return this.tasks;
                 }
@@ -261,11 +256,8 @@
             mounted() {
             //هاي عملتها عشان كل دقيقة تستدعي الميثود الي بتفحص هل مر يوم كامل على المهمة عشان ألغيها ؟
                 setInterval(this.isPastDue, 60000); // call getCurrentTime every minute
-                const taskList = this.$refs.taskList;
-                new Sortable(taskList, {
-                    animation: 150,
-                    onEnd: this.reorderTasks
-                });
+                $('.task-list').sortable();
+
             },
         })
 </script>
