@@ -43,9 +43,13 @@
         background-color: #fe3939 !important;
     }
 
-
 </style>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<!-- jQuery UI -->
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <section class="vh-100">
     <div class="container py-5 h-100" id="to-do-list">
         <div class="row d-flex justify-content-center align-items-center h-100">
@@ -97,9 +101,10 @@
                             <a href="#!" style="color: #23af89;" data-mdb-toggle="tooltip" title="Ascending"><i
                                     class="fas fa-sort-amount-down-alt ms-2"></i></a>
                         </div>
-                        <div class="task-list" v-for="(task,index) in filterTasks">
+                        <div id="sortable-list">
+                        <div class="item" v-for="(task,index) in filterTasks" >
                             <ul class="list-group list-group-horizontal rounded-0 bg-transparent "
-                                v-bind:class="[{'task-done': task.done}, {'task-cancel': task.cancel}]">
+                                v-bind:class="[{'task-done': task.done}, {'task-cancel': task.cancel}]" >
                                 <li class="list-group-item d-flex align-items-center ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
                                     <div class="form-check">
                                         <input
@@ -144,7 +149,7 @@
                                 </li>
                             </ul>
                         </div>
-
+                        </div>
                     </div>
                 </div>
             </div>
@@ -155,7 +160,24 @@
 
 <!-- MDB -->
 <script type="text/javascript" src="js/mdb.min.js"></script>
-<script src="path/to/vue-sortable.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script>
+    $( function() {
+
+        $( "#sortable-list" ).sortable({
+            stop: function(event, ui) {
+
+
+                $("#sortable-list .item").each(function(){
+                    // write code here
+                });
+
+            }
+        }).disableSelection();
+
+    });
+</script>
 <script type="text/javascript">
     var vm = new Vue({
         el: "#to-do-list",
@@ -249,6 +271,7 @@
 
                 for (let i = 0; i < this.tasks.length; i++) {
                     const taskDate = new Date(this.tasks[i].date);
+                    //عشان تجربيها افتحي ع ال vue بالمتصفح غيري الوقت منها لمهمة معينة و سيبي الباقي حتشوفي الشغل تبعها جد
                     if (taskDate.getDate() === today.getDate() && taskDate.getMonth() === today.getMonth() && taskDate.getFullYear() === today.getFullYear()) {
                         totalTasksInDay++;
                         if (this.tasks[i].done) {
@@ -283,6 +306,9 @@
 
         },
     })
+
+
+
 </script>
 </body>
 </html>
