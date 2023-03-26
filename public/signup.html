@@ -32,7 +32,7 @@
 </style>
 
 <section class="gradient-custom">
-    <div class="container py-5 h-100" id="signup">
+    <div class="container py-5 h-100" id="signup-div">
       <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-12 col-md-8 col-lg-6 col-xl-5">
           <div class="card">
@@ -43,41 +43,62 @@
                 <h2 class="fw-bold mb-2 text-uppercase">Signup</h2>
                 <p class="text-black-50 mb-5">Please enter your login and password!</p>
 
-                <form action="login.html">
+                <form action="">
                   <!-- 2 column grid layout with text inputs for the first and last names -->
                   <div class="row mb-5 ">
+
+                    <!-- first name input -->
                     <div class="col">
                       <div class="form-outline">
                         <input 
                           type="text" 
-                          id="form3Example1" 
+                          id="fname" 
+                          v-model="fname"
                           class="form-control" 
                         />
                         <label class="form-label" for="form3Example1">First name</label>
                       </div>
                     </div>
+
+                    <!-- last name input -->
                     <div class="col">
                       <div class="form-outline">
-                        <input type="text" id="form3Example2" class="form-control" />
+                        <input 
+                          type="text" 
+                          id="lname" 
+                          v-model="lname"
+                          class="form-control" 
+                        />
                         <label class="form-label" for="form3Example2">Last name</label>
                       </div>
                     </div>
+
                   </div>
                 
                   <!-- Email input -->
                   <div class="form-outline mb-5">
-                    <input type="email" id="form3Example3" class="form-control" />
+                    <input 
+                      type="email" 
+                      id="email" 
+                      v-model="email"
+                      class="form-control" 
+                    />
                     <label class="form-label" for="form3Example3">Email address</label>
                   </div>
                 
                   <!-- Password input -->
                   <div class="form-outline mb-5">
-                    <input type="password" id="form3Example4" class="form-control" />
+                    <input 
+                      type="password" 
+                      id="password" 
+                      v-model="password"
+                      class="form-control" 
+                    />
                     <label class="form-label" for="form3Example4">Password</label>
                   </div>
                 
 
-                  <button class="btn btn-outline-dark btn-lg px-5" type="submit">Signup</button>
+                  <button @click="registerUser" class="btn btn-outline-dark btn-lg px-5">Signup</button>
                   <br><br>
               
                 </form>                             
@@ -95,16 +116,23 @@
   </section>
 <!-- End your project here-->
 
-<!-- MDB -->
+
 <script type="text/javascript" src="js/mdb.min.js"></script>
 
-<script>
-  var vue = new vue({
-    el: "#signup",
+<script type="text/javascript">
+  var vm = new Vue({
+    el: "#signup-div",
     data:{
-      
+      fname:'',
+      lname:'',
+      email:'',
+      password:'',
+    },
+    methods: {
+      registerUser(){
+        // using the API later to insert user's data into the database
+      }
     }
-
   })
 </script>
 
