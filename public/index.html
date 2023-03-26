@@ -104,6 +104,7 @@
                         <div id="sortable-list">
                         <div class="item" v-for="(task,index) in filterTasks" >
                             <ul class="list-group list-group-horizontal rounded-0 bg-transparent "
+
                                 v-bind:class="[{'task-done': task.done}, {'task-cancel': task.cancel}]" >
                                 <li class="list-group-item d-flex align-items-center ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
                                     <div class="form-check">
