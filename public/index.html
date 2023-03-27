@@ -145,12 +145,7 @@
                                            title="Delete todo" 
                                            @click.stop="deleteTask(index)">
                                            <i class="fas fa-trash-alt me-3"></i>
-                                        </a>  
-                                        <a href="#!" class="text-info" data-mdb-toggle="tooltip"
-                                            title="Add subtask" 
-                                            @click.stop="addSubtask(index, subtask)">
-                                            <i class="fas fa-list-alt "></i>
-                                        </a>                                                                                      
+                                        </a>                                                                                                                               
                                     </div>
                                     <div class="text-end text-muted">
                                         <a href="#!" class="text-muted" data-mdb-toggle="tooltip" title="Created date">
@@ -161,68 +156,70 @@
                                 </li>                            
                             </ul>  
 
+                            <div class="ml-3">
+                                <input type="text" v-model="subTaskTxt" v-bind="tasks[index]"/>
+                                <a href="#!" class="text-info" data-mdb-toggle="tooltip"
+                                    title="Add subtask" 
+                                    @click.stop="addSubtask(index)">Add a Subtask
+                                    <i class="fas fa-list-alt "></i>
+                                </a> 
+                            </div>
                             <!-- subtasks -->
-                            <div id="subtasks" class="ml-3" v-for="(task,index) in subTasks" >                                
+                            <div id="subtasks" v-for="(subTask,subIndex) in tasks[index].subTasks" >                                
 
-                                <ul class=""
-                                v-bind:class="[{'task-done': task.done}, {'task-cancel': task.cancel}]" >
+                                <ul class="list-group list-group-horizontal" v-bind:class="[{'task-done': tasks[index].subTasks[subIndex].subTaskDone}, {'task-cancel': tasks[index].subTasks[subIndex].subTaskCancel}]" >
                                 
-                                <li class="list-group-item d-flex align-items-center ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
-                                    <div class="form-check">
-                                        <input
-                                                class="form-check-input me-0"
-                                                type="checkbox"
-                                                value=""
-                                                id="flexCheckChecked1"
-                                                aria-label="..."
-                                                v-model="task.done"
-                                                v-bind:id="task.id"
-                                                v-on:input="checkCompletedTask(index)"
-                                        />
-                                    </div>
-                                </li>
-                                <!-- <li class="list-group-item px-3 py-1 d-flex align-items-center flex-grow-1 border-0 bg-transparent"
-                                    v-bind:style="{ 'background-color': task.done ? completedColor : '' }">
-                                    <p class="lead fw-normal mb-0" v-if="!task.editMode">{{ task.words }}</p>
-                                    <div v-else class="d-flex flex-row justify-content-end mb-1">
-                                        <input class="form-control form-control-lg" v-model="newValue"
-                                               placeholder="{{task.words}}"/>//هان الموضوع بدو انتباه شوية صغيرة
-                                        <button type="button" class="btn btn-primary" id="save-edited-task"
-                                                @click="saveEditedTask(index)">Save
-                                        </button>
+                                    <li class="list-group-item d-flex align-items-center ml-1 ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
+                                        <div class="form-check ml-1">
+                                            <input
+                                                    class="form-check-input ml-2"
+                                                    type="checkbox"
+                                                    value=""
+                                                    id="flexCheckChecked2"
+                                                    aria-label="..."
+                                                    v-model="tasks[index].subTasks[subIndex].subTaskDone"
+                                                    v-bind:id="tasks[index].subTasks[subIndex].id"
+                                                    v-on:input="checkCompletedSubTask(index, subIndex)"
+                                            />
+                                        </div>
+                                    </li>
+                                    <!-- <li class="list-group-item px-3 py-1 d-flex align-items-center flex-grow-1 border-0 bg-transparent" -->
+                                    <li class="list-group-item d-flex align-items-center flex-grow-1 border-0 bg-transparent"
+                                        v-bind:style="{ 'background-color': task.done ? completedColor : '' }">
+                                        <p class="lead fw-normal mb-0" v-if="!tasks[index].subTasks[subIndex].subTaskEditMode">{{ tasks[index].subTasks[subIndex].txt }}</p>
+                                        <div v-else class="d-flex flex-row justify-content-end ">
+                                            <input class="form-control form-control-sm" v-model="newValue"
+                                                placeholder="{{tasks[index].subtasks.txt}}"/>//هان الموضوع بدو انتباه شوية صغيرة
+                                            <button type="button" class="btn btn-primary" id="save-edited-task"
+                                                    @click="saveEditedTask(index)">Save
+                                            </button>
 
-                                    </div>
-                                </li> -->
-                                <li class="list-group-item ps-3 pe-0 py-1 rounded-0 border-0 bg-transparent">
-                                    <div class="d-flex flex-row justify-content-end mb-2">
-                                        <a href="#!" class="text-info" data-mdb-toggle="tooltip" 
-                                            title="Edit todo"
-                                            @click="editTask(index)">
-                                            <i class="fas fa-pencil-alt me-3"></i>
-                                        </a>
-                                        <a href="#!" class="text-danger" data-mdb-toggle="tooltip"
-                                           title="Delete todo" 
-                                           @click.stop="deleteTask(index)">
-                                           <i class="fas fa-trash-alt me-3"></i>
-                                        </a>  
-                                        <a href="#!" class="text-info" data-mdb-toggle="tooltip"
-                                            title="Add subtask" 
-                                            @click.stop="addSubtask(index, subtask)">
-                                            <i class="fas fa-list-alt "></i>
-                                        </a>                                                                                      
-                                    </div>
-                                    <div class="text-end text-muted">
-                                        <a href="#!" class="text-muted" data-mdb-toggle="tooltip" title="Created date">
-                                            <p class="small mb-0"><i class="fas fa-info-circle me-2"></i>{{ task.date }}
-                                            </p>
-                                        </a>
-                                    </div>
-                                </li>                            
-                            </ul> 
-
-                                
-                            </div>                          
-                            </div>                        
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item ps-3 pe-0 py-1 rounded-0 border-0 bg-transparent">
+                                        <div class="d-flex flex-row justify-content-end mb-2">
+                                            <a href="#!" class="text-info" data-mdb-toggle="tooltip" 
+                                                title="Edit todo"
+                                                @click="editSubtask(index, subIndex)">
+                                                <i class="fas fa-pencil-alt me-3"></i>
+                                            </a>
+                                            <a href="#!" class="text-danger" data-mdb-toggle="tooltip"
+                                            title="Delete todo" 
+                                            @click.stop="deleteSubtask(index, subIndex)">
+                                            <i class="fas fa-trash-alt me-3"></i>
+                                            </a>
+                                        </div>
+                                        <div class="text-end text-muted">
+                                            <a href="#!" class="text-muted" data-mdb-toggle="tooltip" title="Created date">
+                                                <p class="small mb-0"><i class="fas fa-info-circle me-2"></i>{{ tasks[index].subTasks[subIndex].subTaskDone }}
+                                                </p>
+                                            </a>
+                                        </div>
+                                    </li>                            
+                                </ul>                                 
+                            </div> 
+                            <hr>                         
+                            </div>                                                    
                         </div>
                     </div>
                 </div>
@@ -268,8 +265,12 @@
             done: false,
             cancel: false,
             percentageNum: 0,
-            subTasks: [],
-            subTasksNum:0
+            subTaskTxt:'',
+            subTaskId:1,
+            subTaskEditMode: false,
+            subTaskDone: false,
+            subTaskCancel: false,
+
         },
         methods: {
             addTask: function () {
@@ -281,12 +282,18 @@
                     date: new Date().toJSON().slice(0, 10).replace(/-/g, '/'),
                     editMode: this.editMode,
                     reminder: new Date(+new Date().setHours(0, 0, 0, 0) + 86400000).toLocaleDateString('fr-CA'),
+                    subTasks: [],
+                    completedSubtasks: [],
+
                 });
                 this.taskText = '';
                 this.num++;
             },
             deleteTask: function (index) {
                 this.tasks.splice(index, 1);
+            },
+            deleteSubtask: function (parentIndex, childIndex) {
+                this.tasks[parentIndex].subTasks.splice(childIndex, 1);
             },
             editTask: function (index) {
                 this.tasks[index].editMode = true;
@@ -303,14 +310,31 @@
                     this.completedTasks.splice(this.tasks[index], 1);
                 }
             },
+            checkCompletedSubTask(parentIndex, childIndex) {
+                isChecked = !this.tasks[parentIndex].subTasks[childIndex].done;
+                if (isChecked) {
+                    // this.completedTasks.push(this.tasks[index]);
+                    this.tasks[parentIndex].completedSubtasks.push(this.tasks[parentIndex].subTasks[childIndex])
+                } else {
+                    // this.completedTasks.splice(this.tasks[index], 1);
+                    this.tasks[parentIndex].completedSubtasks.splice(this.tasks[parentIndex].subTasks[childIndex], 1)
+
+                }
+            },
             updateTasks() {
                 this.tasks = this.filteredTasks();
             },
-            addSubtask(index, subtask){
-                this.subTasks.push({
-                    parentId: this.num,
+            addSubtask: function (index) {
+                this.tasks[index].subTasks.push({
+                    parentId: index,
+                    id: this.subTaskId,
+                    txt: this.subTaskTxt,
+                    date: new Date().toJSON().slice(0, 10).replace(/-/g, '/'),
+                    done: this.subTaskDone,
+                    cancel: this.subTaskCancel
                 });
-                this.subTasksNum++;
+                this.subTaskTxt='';
+                this.subTaskId++;
             }
         },
         computed: {
@@ -332,9 +356,15 @@
                 this.tasks = this.filteredTasks();
             },
             completionPercentage() {
-                const total = this.tasks.length;
+                var total = this.tasks.length;
                 var completed = 0;
-                for (let i = 0; i < this.tasks.length; i++) {
+                for (let i = 0; i < this.tasks.length; i++) { 
+                    for (let n = 0; n < this.tasks[i].subTasks.length; n++) {
+                        if (this.tasks[i].subTasks[n].done) {
+                            completed++;
+                        }
+                        total++;                       
+                    }
                     if (this.tasks[i].done) {
                         completed++;
                     }
