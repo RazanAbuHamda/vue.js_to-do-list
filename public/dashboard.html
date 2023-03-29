@@ -96,19 +96,19 @@
                                 <option value="1">All</option>
                                 <option value="2">Completed</option>
                                 <option value="3">Active</option>
-                                <option value="4">Has due date</option>                                
+                                <option value="4">Cancelled</option>                                
                             </select>
                             <p class="small mb-0 ms-4 me-2 text-muted">Sort</p>
                             <select class="select" v-model="selectedSorting" @change="sortTasks">
                                 <option value="1">Added date</option>
-                                <option value="2">Due date</option>
+                                <option value="2">Completion Date</option>
                             </select>
                             <a href="#!" style="color: #23af89;" data-mdb-toggle="tooltip" title="Ascending"><i
                                     class="fas fa-sort-amount-down-alt ms-2"></i></a>
                         </div>
                         <div id="sortable-list">
                             <div class="item" v-for="(task,index) in filterTasks" >
-                            
+                                <div v-for="(task,index) in sortTasks">
                                 <ul class="list-group list-group-horizontal rounded-0 bg-transparent "
                                     v-bind:class="[{'task-done': task.done}, {'task-cancel': task.cancel}]" >
                                     
@@ -235,7 +235,9 @@
                                     </div>
                                     <hr> 
                                 </div>                        
-                            </div>                                                    
+                            
+                                </div> 
+                            </div>                                                   
                         </div>
                     </div>
                 </div>
@@ -260,6 +262,17 @@
 
             }
         }).disableSelection();
+
+        $( "#subtask-sortable-list" ).sortable({
+            connectWith: "#sortable-list",
+            stop: function(event, ui) {
+                $("#subtask-sortable-list .subtask-sortable-list-item").each(function(){
+                    // write code here
+                });
+
+            }
+        }).disableSelection();
+
     });         
 
 
@@ -378,13 +391,21 @@
                         return this.tasks;
                 }
             },
-            sortTasks() {
+            sortTasks: function () {
+                switch (this.selectedSorting) {
+                    case "1":
+                        return this.tasks;               
+                    case "2":
+                        return this.completedTasks;
+                    default:
+                        return this.tasks;                              
+                }
                 // this.tasks = this.filteredTasks();
             },
             sortAccordingToAddedDate(){
-                // this.tasks.sort( function(taskA, taskB) {
-                //     return taskA.date - taskB.date;
-                // });
+                this.tasks.sort( function(taskA, taskB) {
+                    return taskA.date - taskB.date;
+                });
             },
             sortAccordingToCompletionDate(){
                 // this.tasks.sort( function(taskA, taskB) {
@@ -419,7 +440,6 @@
 
                 for (let i = 0; i < this.tasks.length; i++) {
                     const taskDate = new Date(this.tasks[i].date);
-                    //عشان تجربيها افتحي ع ال vue بالمتصفح غيري الوقت منها لمهمة معينة و سيبي الباقي حتشوفي الشغل تبعها جد
                     if (taskDate.getDate() === today.getDate() && taskDate.getMonth() === today.getMonth() && taskDate.getFullYear() === today.getFullYear()) {
                         totalTasksInDay++;
                         if (this.tasks[i].done) {
