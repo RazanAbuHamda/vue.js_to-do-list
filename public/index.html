@@ -86,13 +86,17 @@
 
                         <hr class="my-4">
 
-                        <div class="d-flex justify-content-end align-items-center mb-4 pt-2 pb-3">
-                            <p class="small mb-0 me-2 text-muted">Filter</p>
+                        <div class="d-flex justify-content-end align-items-center mb-4 pt-2 pb-3">                        
+                            <p class="small mb-0 me-2 text-muted">Check the Tasks Completed Per Day</p>
+                            <a href="perDay.html" class="text-success me-4 mb-0" data-mdb-toggle="tooltip" title="CheckTasks">
+                                <i class="fas fa-chart-pie"></i>
+                            </a>
+                            <p class="small ml-2 mb-0 me-2 text-muted">Filter</p>
                             <select class="select" v-model="selectedFilter" @change="updateTasks">
                                 <option value="1">All</option>
                                 <option value="2">Completed</option>
                                 <option value="3">Active</option>
-                                <option value="4">Has due date</option>
+                                <option value="4">Has due date</option>                                
                             </select>
                             <p class="small mb-0 ms-4 me-2 text-muted">Sort</p>
                             <select class="select" v-model="selectedSorting" @change="sortTasks">
@@ -375,17 +379,17 @@
                 }
             },
             sortTasks() {
-                this.tasks = this.filteredTasks();
+                // this.tasks = this.filteredTasks();
             },
             sortAccordingToAddedDate(){
-                this.tasks.sort( function(taskA, taskB) {
-                    return taskA.date - taskB.date;
-                });
+                // this.tasks.sort( function(taskA, taskB) {
+                //     return taskA.date - taskB.date;
+                // });
             },
             sortAccordingToCompletionDate(){
-                this.tasks.sort( function(taskA, taskB) {
-                    return taskA.done - taskB.done;
-                });
+                // this.tasks.sort( function(taskA, taskB) {
+                //     return taskA.done - taskB.done;
+                // });
             },
             completionPercentage() {
                 var total = this.tasks.length;
