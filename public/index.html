@@ -126,10 +126,10 @@
                                     v-bind:style="{ 'background-color': task.done ? completedColor : '' }">
                                     <p class="lead fw-normal mb-0" v-if="!task.editMode">{{ task.words }}</p>
                                     <div v-else class="d-flex flex-row justify-content-end mb-1">
-                                        <input class="form-control form-control-lg" v-model="newValue"
-                                               placeholder= {{task.words}} />
+                                        <input class="form-control form-control-lg" v-model="tasks[index].newValue"
+                                            :placeholder= "task.words" />
                                         <button type="button" class="btn btn-primary" id="save-edited-task" style="margin: left 10px;"
-                                        :disabled="!newValue" @click="saveEditedTask(index)"  >Save
+                                        :disabled="!tasks[index].newValue" @click="saveEditedTask(index)"  >Save
                                         </button>
 
                                     </div>
@@ -197,7 +197,7 @@
                                                         type="text"                                       
                                                         style="height: 40px; width: 300px; border: none; border-radius: 4px; margin-right: 10px;" 
                                                         v-model="tasks[index].subTasks[subIndex].subTaskEditedValue" 
-                                                                                               
+                                                        :placeholder="tasks[index].subTasks[subIndex].txt"                                                     
                                                     />   
                                                     <button type="button" class="btn btn-primary" id="save-edited-subtask" 
                                                             @click="saveEditedSubtask(index, subIndex)" >Save
@@ -288,7 +288,6 @@
             completedTasks: [],
             canceledTasks: [],
             taskText: '',
-            newValue: '',
             num: 1,
             editMode: false,
             done: false,
@@ -306,6 +305,7 @@
                     id: this.num,
                     words: this.taskText,
                     done: this.done,
+                    newValue: '',
                     cancel: this.cancel,
                     date: new Date().toJSON().slice(0, 10).replace(/-/g, '/'),
                     editMode: this.editMode,
@@ -334,7 +334,7 @@
                 this.tasks[parentIndex].subTasks[childIndex].subTaskEditMode = false;
             },
             saveEditedTask(index) {
-                this.tasks[index].words = this.newValue;
+                this.tasks[index].words = this.tasks[index].newValue;
                 this.tasks[index].editMode = false;
             },
             checkCompletedTask(index) {
