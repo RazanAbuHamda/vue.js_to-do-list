@@ -208,8 +208,7 @@
                                                                 @click="saveEditedSubtask(index, subIndex)" >Save
                                                         </button>
                                                     </div>
-                                                </li>                                   
-
+                                                </li>                             
                                                 <li class="list-group-item ps-3 pe-0 py-1 rounded-0 border-0 bg-transparent">
                                                     <div class="d-flex flex-row justify-content-end mb-2">
                                                         <a href="#!" class="text-info" data-mdb-toggle="tooltip" 
@@ -255,23 +254,10 @@
 <script>
     $( function() {
         $( "#sortable-list" ).sortable({
-            stop: function(event, ui) {
-                $("#sortable-list .item").each(function(){
-                    // write code here
-                });
-
-            }
+            items:".item .subtask-sortable-list-item ",
+                      
         }).disableSelection();
 
-        $( "#subtask-sortable-list" ).sortable({
-            connectWith: "#sortable-list",
-            stop: function(event, ui) {
-                $("#subtask-sortable-list .subtask-sortable-list-item").each(function(){
-                    // write code here
-                });
-
-            }
-        }).disableSelection();
 
     });         
 
