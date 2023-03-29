@@ -93,6 +93,7 @@
                             </a>
                             <p class="small ml-2 mb-0 me-2 text-muted">Filter</p>
                             <select class="select" v-model="selectedFilter" @change="updateTasks">
+                                <option></option>
                                 <option value="1">All</option>
                                 <option value="2">Completed</option>
                                 <option value="3">Active</option>
@@ -100,6 +101,7 @@
                             </select>
                             <p class="small mb-0 ms-4 me-2 text-muted">Sort</p>
                             <select class="select" v-model="selectedSorting" @change="sortTasks">
+                                <option></option>
                                 <option value="1">Added date</option>
                                 <option value="2">Completion Date</option>
                             </select>
@@ -267,8 +269,8 @@
         data: {
             tasks: [],
             choosenArray: [],
-            selectedFilter: 1, // set the default selected option to "All"
-            selectedSorting:1, //default is added date
+            selectedFilter: '', //default filter is none
+            selectedSorting: '', // default sorting is none
             completedTasks: [],
             canceledTasks: [],
             taskText: '',
@@ -280,7 +282,6 @@
             subTaskId:1,
             subTaskDone: false,
             subTaskCancel: false,
-            taskEditDate:'',
             subtaskInput:0
 
         },
@@ -297,6 +298,7 @@
                     reminder: new Date(+new Date().setHours(0, 0, 0, 0) + 86400000).toLocaleDateString('fr-CA'),
                     subTasks: [],
                     subTaskTxt:'',
+                    completionDate:0
                 });
                 this.taskText = '';
                 this.num++;
@@ -319,12 +321,12 @@
             },
             saveEditedTask(index) {
                 this.tasks[index].words = this.tasks[index].newValue;
-                this.tasks[index].taskEditDate = new Date();
                 this.tasks[index].editMode = false;
             },
             checkCompletedTask(index) {
                 isChecked = !this.tasks[index].done;
                 if (isChecked) {
+                    this.tasks[index].completionDate = new Date();
                     this.completedTasks.push(this.tasks[index]);
                 } else {
                     this.completedTasks.splice(this.tasks[index], 1);
@@ -333,15 +335,16 @@
             checkCompletedSubTask(parentIndex, childIndex) {
                 isChecked = !this.tasks[parentIndex].subTasks[childIndex].done;
                 if (isChecked) {
-                    console.log("yasss")
                     this.completedTasks.push(this.tasks[parentIndex].subTasks[childIndex])
                 } else {
-                    console.log("noooo")
                     this.completedTasks.splice(this.tasks[parentIndex].subTasks[childIndex], 1)
 
                 }
             },
             updateTasks() {
+                this.tasks = this.filteredTasks();
+            },
+            sortTasks(){
                 this.tasks = this.filteredTasks();
             },
             addSubtask: function (index) {
@@ -358,44 +361,66 @@
             });
                 this.tasks[index].subTaskTxt = '',
                 this.subTaskId++;
-            }
+            },
+            sortAccordingToAddedDate(){
+                for (let i = 0; i < this.tasks.length; i++) {
+                    console.log(this.tasks[i].date);                
+                }
+
+                this.tasks.sort( 
+                    (taskA, taskB) => Number(taskA.date) - Number(taskB.date),
+                );
+
+                for (let i = 0; i < this.tasks.length; i++) {
+                    console.log(this.tasks[i].date);                
+                }
+                return this.tasks;            
+            },
+            sortAccordingToCompletedDate(){
+                for (let i = 0; i < this.tasks.length; i++) {
+                    console.log(this.tasks[i].completionDate);                
+                }
+
+                // to filter the tasks that have completion date if it has 
+                const filteredArray = this.tasks.filter(obj => obj.completionDate && new Date(obj.date) instanceof Date);
+
+                return filteredArray.sort( 
+                    (taskA, taskB) => Number(taskA.completionDate) - Number(taskB.completionDate),
+                );
+                for (let i = 0; i < this.tasks.length; i++) {
+                    console.log(this.tasks[i].completionDate);                
+                }
+                return this.filteredArray;            
+            },
         },
         computed: {
             filterTasks: function () {
-                switch (this.selectedFilter) {
-                    case "1":
-                        return this.tasks;
-                    case "2":
-                        return this.completedTasks;
-                    case "3":
-                        return this.tasks.filter(task => !task.done);
-                    case "4":
-                        return this.canceledTasks;
-                    default:
-                        return this.tasks;
+                if(this.selectedFilter !== ''){
+                    switch (this.selectedFilter) {
+                        case "1":
+                            return this.tasks;
+                        case "2":
+                            return this.completedTasks;
+                        case "3":
+                            return this.tasks.filter(task => !task.done);
+                        case "4":
+                            return this.canceledTasks;
+                        default:
+                            return this.tasks;
+                    }
+                }else{
+                    switch (this.selectedSorting) {
+                        case "1":
+                            // console.log(this.tasks)
+                            return this.sortAccordingToAddedDate();
+                        case "2":
+                            // console.log("completion date")
+                            return this.sortAccordingToCompletedDate();
+                        default:
+                            return this.tasks;
+                    }
                 }
-            },
-            sortTasks: function () {
-                console.log("whateva");
-                // switch (this.selectedSorting) {
-                //     case "1":
-                //         return this.tasks;               
-                //     case "2":
-                //         return this.completedTasks;
-                //     default:
-                //         return this.tasks;                              
-                // }
-                // this.tasks = this.filteredTasks();
-            },
-            sortAccordingToAddedDate(){
-                this.tasks.sort( function(taskA, taskB) {
-                    return taskA.date - taskB.date;
-                });
-            },
-            sortAccordingToCompletionDate(){
-                // this.tasks.sort( function(taskA, taskB) {
-                //     return taskA.done - taskB.done;
-                // });
+                
             },
             completionPercentage() {
                 var total = this.tasks.length;
@@ -457,7 +482,7 @@
             setInterval(this.isPastDue, 60000); // call getCurrentTime every minute
             $('.task-list').sortable();
 
-        },
+        },        
     })
 
 
