@@ -255,7 +255,6 @@
  
       $( "#sortable-list" ).sortable({
             items:".item, .subtask-sortable-list-item ",
-            // containment: ".item",
                       
         }).disableSelection();
 
@@ -362,35 +361,17 @@
                 this.tasks[index].subTaskTxt = '',
                 this.subTaskId++;
             },
-            sortAccordingToAddedDate(){
-                for (let i = 0; i < this.tasks.length; i++) {
-                    console.log(this.tasks[i].date);                
-                }
-
-                this.tasks.sort( 
+            sortAccordingToAddedDate(){        
+                
+                return this.tasks.sort( 
                     (taskA, taskB) => Number(taskA.date) - Number(taskB.date),
-                );
-
-                for (let i = 0; i < this.tasks.length; i++) {
-                    console.log(this.tasks[i].date);                
-                }
-                return this.tasks;            
+                );            
             },
-            sortAccordingToCompletedDate(){
-                for (let i = 0; i < this.tasks.length; i++) {
-                    console.log(this.tasks[i].completionDate);                
-                }
+            sortAccordingToCompletedDate(){                
 
-                // to filter the tasks that have completion date if it has 
-                const filteredArray = this.tasks.filter(obj => obj.completionDate && new Date(obj.date) instanceof Date);
-
-                return filteredArray.sort( 
+                return this.completedTasks.sort( 
                     (taskA, taskB) => Number(taskA.completionDate) - Number(taskB.completionDate),
                 );
-                for (let i = 0; i < this.tasks.length; i++) {
-                    console.log(this.tasks[i].completionDate);                
-                }
-                return this.filteredArray;            
             },
         },
         computed: {
@@ -411,10 +392,8 @@
                 }else{
                     switch (this.selectedSorting) {
                         case "1":
-                            // console.log(this.tasks)
                             return this.sortAccordingToAddedDate();
                         case "2":
-                            // console.log("completion date")
                             return this.sortAccordingToCompletedDate();
                         default:
                             return this.tasks;
@@ -437,6 +416,7 @@
                         completed++;
                     }
                 }
+
                 if (total === 0) {
                     return 0;
                 } else {
@@ -450,13 +430,23 @@
 
                 for (let i = 0; i < this.tasks.length; i++) {
                     const taskDate = new Date(this.tasks[i].date);
+                    for (let n = 0; n < this.tasks[i].subTasks.length; n++) {
+                        const subTaskDate = new Date(this.tasks[i].subTasks[n].date);
+                        if (subTaskDate.getDate() === today.getDate() && subTaskDate.getMonth() === today.getMonth() && subTaskDate.getFullYear() === today.getFullYear()) {
+                            totalTasksInDay++;
+                            if (this.tasks[i].subTasks[n].subTaskDone) {
+                                completedTasks++;
+                            }
+                        }
+
+                    }
                     if (taskDate.getDate() === today.getDate() && taskDate.getMonth() === today.getMonth() && taskDate.getFullYear() === today.getFullYear()) {
                         totalTasksInDay++;
                         if (this.tasks[i].done) {
                             completedTasks++;
                         }
                     }
-                }
+                }                
 
                 if (totalTasksInDay === 0) {
                     return 0;
