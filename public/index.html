@@ -95,7 +95,7 @@
                                 <option value="4">Has due date</option>
                             </select>
                             <p class="small mb-0 ms-4 me-2 text-muted">Sort</p>
-                            <select class="select">
+                            <select class="select" v-model="selectedSorting" @change="sortTasks">
                                 <option value="1">Added date</option>
                                 <option value="2">Due date</option>
                             </select>
@@ -105,131 +105,132 @@
                         <div id="sortable-list">
                             <div class="item" v-for="(task,index) in filterTasks" >
                             
-                            <ul class="list-group list-group-horizontal rounded-0 bg-transparent "
-                                v-bind:class="[{'task-done': task.done}, {'task-cancel': task.cancel}]" >
+                                <ul class="list-group list-group-horizontal rounded-0 bg-transparent "
+                                    v-bind:class="[{'task-done': task.done}, {'task-cancel': task.cancel}]" >
+                                    
+                                    <li class="list-group-item d-flex align-items-center ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
+                                        <div class="form-check">
+                                            <input
+                                                    class="form-check-input me-0"
+                                                    type="checkbox"
+                                                    value=""
+                                                    id="flexCheckChecked1"
+                                                    aria-label="..."
+                                                    v-model="task.done"
+                                                    v-bind:id="task.id"
+                                                    v-on:input="checkCompletedTask(index)"
+                                            />
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item px-3 py-1 d-flex align-items-center flex-grow-1 border-0 bg-transparent"
+                                        v-bind:style="{ 'background-color': task.done ? completedColor : '' }">
+                                        <p class="lead fw-normal mb-0" v-if="!task.editMode">{{ task.words }}</p>
+                                        <div v-else class="d-flex flex-row justify-content-end mb-1">
+                                            <input class="form-control form-control-lg" v-model="task.newValue"
+                                                :placeholder= "task.words" />
+                                            <button type="button" class="btn btn-primary" id="save-edited-task" style="margin: left 10px;"
+                                            :disabled="!task.newValue" @click="saveEditedTask(index)"  >Save
+                                            </button>
+
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item ps-3 pe-0 py-1 rounded-0 border-0 bg-transparent">
+                                        <div class="d-flex flex-row justify-content-end mb-2">
+                                            <a href="#!" class="text-info" data-mdb-toggle="tooltip" 
+                                                title="Edit todo"
+                                                @click="editTask(index)">
+                                                <i class="fas fa-pencil-alt me-3"></i>
+                                            </a>
+                                            <a href="#!" class="text-danger" data-mdb-toggle="tooltip"
+                                            title="Delete todo" 
+                                            @click.stop="deleteTask(index)">
+                                            <i class="fas fa-trash-alt me-3"></i>
+                                            </a>                                                                                                                               
+                                        </div>
+                                        <div class="text-end text-muted">
+                                            <a href="#!" class="text-muted" data-mdb-toggle="tooltip" title="Created date">
+                                                <p class="small mb-0"><i class="fas fa-info-circle me-2"></i>{{ task.date.toJSON().slice(0, 10).replace(/-/g, '/') }}
+                                                </p>
+                                            </a>
+                                        </div>
+                                    </li>                            
+                                </ul> 
                                 
-                                <li class="list-group-item d-flex align-items-center ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
-                                    <div class="form-check">
-                                        <input
-                                                class="form-check-input me-0"
-                                                type="checkbox"
-                                                value=""
-                                                id="flexCheckChecked1"
-                                                aria-label="..."
-                                                v-model="task.done"
-                                                v-bind:id="task.id"
-                                                v-on:input="checkCompletedTask(index)"
-                                        />
-                                    </div>
-                                </li>
-                                <li class="list-group-item px-3 py-1 d-flex align-items-center flex-grow-1 border-0 bg-transparent"
-                                    v-bind:style="{ 'background-color': task.done ? completedColor : '' }">
-                                    <p class="lead fw-normal mb-0" v-if="!task.editMode">{{ task.words }}</p>
-                                    <div v-else class="d-flex flex-row justify-content-end mb-1">
-                                        <input class="form-control form-control-lg" v-model="task.newValue"
-                                            :placeholder= "task.words" />
-                                        <button type="button" class="btn btn-primary" id="save-edited-task" style="margin: left 10px;"
-                                        :disabled="!task.newValue" @click="saveEditedTask(index)"  >Save
+                                <div style="margin-left: 50px;">
+                                    <div class="ml-3">
+                                        <input 
+                                            type="text"                                       
+                                            style="height: 40px; width: 300px; border: none; border-radius: 4px; margin-right: 10px;" 
+                                            v-model="task.subTaskTxt" 
+                                            v-bind="task.subTaskTxt"                                       
+                                        />                                    
+                                        <button type="button" style="height: 35px;" class="btn btn-info h-25" :disabled="!task.subTaskTxt" @click.prevent="addSubtask(index)">
+                                            Add a Subtask
                                         </button>
+                                    </div>
+                                    <!-- subtasks -->
+                                    <div id="subtask-sortable-list">
+                                        <div class="subtask-sortable-list-item" v-for="(subTask,subIndex) in task.subTasks" >                                
+                                            <ul class="list-group list-group-horizontal" 
+                                                v-bind:class="
+                                                        [{'task-done': task.subTasks[subIndex].subTaskDone}, 
+                                                        {'task-cancel': task.subTasks[subIndex].subTaskCancel}]" >
+                                            
+                                                <li class="list-group-item d-flex align-items-center ml-1 ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
+                                                    <div class="form-check ml-1">
+                                                        <input
+                                                                class="form-check-input ml-2"
+                                                                type="checkbox"
+                                                                value=""
+                                                                id="flexCheckChecked2"
+                                                                aria-label="..."
+                                                                v-model="task.subTasks[subIndex].subTaskDone"
+                                                                v-bind:id="task.subTasks[subIndex].id"
+                                                                v-on:input="checkCompletedSubTask(index, subIndex)"
+                                                        />
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item d-flex align-items-center flex-grow-1 border-0 bg-transparent"
+                                                    v-bind:style="{ 'background-color': task.subTasks[subIndex].subTaskDone ? completedColor : '' }">
+                                                    <p class="lead fw-normal mb-0" v-if="!task.subTasks[subIndex].subTaskEditMode">{{ task.subTasks[subIndex].txt }}</p>
+                                                    <div v-else >
+                                                        <input 
+                                                            type="text"                                       
+                                                            style="height: 40px; width: 300px; border: none; border-radius: 4px; margin-right: 10px;" 
+                                                            v-model="task.subTasks[subIndex].subTaskEditedValue" 
+                                                            :placeholder="task.subTasks[subIndex].txt"                                                     
+                                                        />   
+                                                        <button type="button" class="btn btn-primary" id="save-edited-subtask" 
+                                                                @click="saveEditedSubtask(index, subIndex)" >Save
+                                                        </button>
+                                                    </div>
+                                                </li>                                   
 
+                                                <li class="list-group-item ps-3 pe-0 py-1 rounded-0 border-0 bg-transparent">
+                                                    <div class="d-flex flex-row justify-content-end mb-2">
+                                                        <a href="#!" class="text-info" data-mdb-toggle="tooltip" 
+                                                            title="Edit todo"
+                                                            @click="editSubtask(index, subIndex)">
+                                                            <i class="fas fa-pencil-alt me-3"></i>
+                                                        </a>
+                                                        <a href="#!" class="text-danger" data-mdb-toggle="tooltip"
+                                                        title="Delete todo" 
+                                                        @click.stop="deleteSubtask(index, subIndex)">
+                                                        <i class="fas fa-trash-alt me-3"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="text-end text-muted">
+                                                        <a href="#!" class="text-muted" data-mdb-toggle="tooltip" title="Created date">
+                                                            <p class="small mb-0"><i class="fas fa-info-circle me-2"></i>{{ task.subTasks[subIndex].date }}
+                                                            </p>
+                                                        </a>
+                                                    </div>
+                                                </li>                            
+                                            </ul>                                 
+                                        </div> 
                                     </div>
-                                </li>
-                                <li class="list-group-item ps-3 pe-0 py-1 rounded-0 border-0 bg-transparent">
-                                    <div class="d-flex flex-row justify-content-end mb-2">
-                                        <a href="#!" class="text-info" data-mdb-toggle="tooltip" 
-                                            title="Edit todo"
-                                            @click="editTask(index)">
-                                            <i class="fas fa-pencil-alt me-3"></i>
-                                        </a>
-                                        <a href="#!" class="text-danger" data-mdb-toggle="tooltip"
-                                           title="Delete todo" 
-                                           @click.stop="deleteTask(index)">
-                                           <i class="fas fa-trash-alt me-3"></i>
-                                        </a>                                                                                                                               
-                                    </div>
-                                    <div class="text-end text-muted">
-                                        <a href="#!" class="text-muted" data-mdb-toggle="tooltip" title="Created date">
-                                            <p class="small mb-0"><i class="fas fa-info-circle me-2"></i>{{ task.date }}
-                                            </p>
-                                        </a>
-                                    </div>
-                                </li>                            
-                            </ul>  
-                            <div style="margin-left: 50px;">
-                                <div class="ml-3">
-                                    <input 
-                                        type="text"                                       
-                                        style="height: 40px; width: 300px; border: none; border-radius: 4px; margin-right: 10px;" 
-                                        v-model="task.subTaskTxt" 
-                                        v-bind="task.subTaskTxt"                                       
-                                       />                                    
-                                    <button type="button" style="height: 35px;" class="btn btn-info h-25" :disabled="!task.subTaskTxt" @click.prevent="addSubtask(index)">
-                                        Add a Subtask
-                                    </button>
-                                </div>
-                                <!-- subtasks -->
-                                <div id="subtask-sortable-list">
-                                    <div class="subtask-sortable-list-item" v-for="(subTask,subIndex) in task.subTasks" >                                
-                                        <ul class="list-group list-group-horizontal" 
-                                            v-bind:class="
-                                                    [{'task-done': task.subTasks[subIndex].subTaskDone}, 
-                                                    {'task-cancel': task.subTasks[subIndex].subTaskCancel}]" >
-                                        
-                                            <li class="list-group-item d-flex align-items-center ml-1 ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
-                                                <div class="form-check ml-1">
-                                                    <input
-                                                            class="form-check-input ml-2"
-                                                            type="checkbox"
-                                                            value=""
-                                                            id="flexCheckChecked2"
-                                                            aria-label="..."
-                                                            v-model="task.subTasks[subIndex].subTaskDone"
-                                                            v-bind:id="task.subTasks[subIndex].id"
-                                                            v-on:input="checkCompletedSubTask(index, subIndex)"
-                                                    />
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item d-flex align-items-center flex-grow-1 border-0 bg-transparent"
-                                                v-bind:style="{ 'background-color': task.subTasks[subIndex].subTaskDone ? completedColor : '' }">
-                                                <p class="lead fw-normal mb-0" v-if="!task.subTasks[subIndex].subTaskEditMode">{{ task.subTasks[subIndex].txt }}</p>
-                                                <div v-else >
-                                                    <input 
-                                                        type="text"                                       
-                                                        style="height: 40px; width: 300px; border: none; border-radius: 4px; margin-right: 10px;" 
-                                                        v-model="task.subTasks[subIndex].subTaskEditedValue" 
-                                                        :placeholder="task.subTasks[subIndex].txt"                                                     
-                                                    />   
-                                                    <button type="button" class="btn btn-primary" id="save-edited-subtask" 
-                                                            @click="saveEditedSubtask(index, subIndex)" >Save
-                                                    </button>
-                                                </div>
-                                            </li>                                   
-
-                                            <li class="list-group-item ps-3 pe-0 py-1 rounded-0 border-0 bg-transparent">
-                                                <div class="d-flex flex-row justify-content-end mb-2">
-                                                    <a href="#!" class="text-info" data-mdb-toggle="tooltip" 
-                                                        title="Edit todo"
-                                                        @click="editSubtask(index, subIndex)">
-                                                        <i class="fas fa-pencil-alt me-3"></i>
-                                                    </a>
-                                                    <a href="#!" class="text-danger" data-mdb-toggle="tooltip"
-                                                    title="Delete todo" 
-                                                    @click.stop="deleteSubtask(index, subIndex)">
-                                                    <i class="fas fa-trash-alt me-3"></i>
-                                                    </a>
-                                                </div>
-                                                <div class="text-end text-muted">
-                                                    <a href="#!" class="text-muted" data-mdb-toggle="tooltip" title="Created date">
-                                                        <p class="small mb-0"><i class="fas fa-info-circle me-2"></i>{{ task.subTasks[subIndex].date }}
-                                                        </p>
-                                                    </a>
-                                                </div>
-                                            </li>                            
-                                        </ul>                                 
-                                    </div> 
-                                </div>
-                                <hr> 
-                            </div>                        
+                                    <hr> 
+                                </div>                        
                             </div>                                                    
                         </div>
                     </div>
@@ -255,26 +256,7 @@
 
             }
         }).disableSelection();
-    });
-
-//     $(function() {
-        
-//         $("#sortable-list").sortable({
-//             // items: ".item",
-//             connectWith: "#sortable-list #subtask-sortable-list",
-//             // containment: "#sortable-list",
-//         }).disableSelection();
-
-//         $("#subtask-sortable-list").sortable({
-//             items: ".subtask-sortable-list-item",
-//             // items: ".> div",
-//             // containment:"#sortable-list .item",
-//             connectWith: "#sortable-list #subtask-sortable-list",
-//         }).disableSelection();
-
-// });
-
-            
+    });         
 
 
 </script>
@@ -285,6 +267,7 @@
             tasks: [],
             choosenArray: [],
             selectedFilter: 1, // set the default selected option to "All"
+            selectedSorting:1, //default is added date
             completedTasks: [],
             canceledTasks: [],
             taskText: '',
@@ -296,6 +279,7 @@
             subTaskId:1,
             subTaskDone: false,
             subTaskCancel: false,
+            taskEditDate:'',
             subtaskInput:0
 
         },
@@ -307,7 +291,7 @@
                     done: this.done,
                     newValue: '',
                     cancel: this.cancel,
-                    date: new Date().toJSON().slice(0, 10).replace(/-/g, '/'),
+                    date: new Date(),
                     editMode: this.editMode,
                     reminder: new Date(+new Date().setHours(0, 0, 0, 0) + 86400000).toLocaleDateString('fr-CA'),
                     subTasks: [],
@@ -334,6 +318,7 @@
             },
             saveEditedTask(index) {
                 this.tasks[index].words = this.tasks[index].newValue;
+                this.tasks[index].taskEditDate = new Date();
                 this.tasks[index].editMode = false;
             },
             checkCompletedTask(index) {
@@ -389,8 +374,18 @@
                         return this.tasks;
                 }
             },
-            updateTasks() {
+            sortTasks() {
                 this.tasks = this.filteredTasks();
+            },
+            sortAccordingToAddedDate(){
+                this.tasks.sort( function(taskA, taskB) {
+                    return taskA.date - taskB.date;
+                });
+            },
+            sortAccordingToCompletionDate(){
+                this.tasks.sort( function(taskA, taskB) {
+                    return taskA.done - taskB.done;
+                });
             },
             completionPercentage() {
                 var total = this.tasks.length;
