@@ -126,10 +126,10 @@
                                     v-bind:style="{ 'background-color': task.done ? completedColor : '' }">
                                     <p class="lead fw-normal mb-0" v-if="!task.editMode">{{ task.words }}</p>
                                     <div v-else class="d-flex flex-row justify-content-end mb-1">
-                                        <input class="form-control form-control-lg" v-model="tasks[index].newValue"
+                                        <input class="form-control form-control-lg" v-model="task.newValue"
                                             :placeholder= "task.words" />
                                         <button type="button" class="btn btn-primary" id="save-edited-task" style="margin: left 10px;"
-                                        :disabled="!tasks[index].newValue" @click="saveEditedTask(index)"  >Save
+                                        :disabled="!task.newValue" @click="saveEditedTask(index)"  >Save
                                         </button>
 
                                     </div>
@@ -169,11 +169,11 @@
                                 </div>
                                 <!-- subtasks -->
                                 <div id="subtask-sortable-list">
-                                    <div class="subtask-sortable-list-item" v-for="(subTask,subIndex) in tasks[index].subTasks" >                                
+                                    <div class="subtask-sortable-list-item" v-for="(subTask,subIndex) in task.subTasks" >                                
                                         <ul class="list-group list-group-horizontal" 
                                             v-bind:class="
-                                                    [{'task-done': tasks[index].subTasks[subIndex].subTaskDone}, 
-                                                    {'task-cancel': tasks[index].subTasks[subIndex].subTaskCancel}]" >
+                                                    [{'task-done': task.subTasks[subIndex].subTaskDone}, 
+                                                    {'task-cancel': task.subTasks[subIndex].subTaskCancel}]" >
                                         
                                             <li class="list-group-item d-flex align-items-center ml-1 ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
                                                 <div class="form-check ml-1">
@@ -183,21 +183,21 @@
                                                             value=""
                                                             id="flexCheckChecked2"
                                                             aria-label="..."
-                                                            v-model="tasks[index].subTasks[subIndex].subTaskDone"
-                                                            v-bind:id="tasks[index].subTasks[subIndex].id"
+                                                            v-model="task.subTasks[subIndex].subTaskDone"
+                                                            v-bind:id="task.subTasks[subIndex].id"
                                                             v-on:input="checkCompletedSubTask(index, subIndex)"
                                                     />
                                                 </div>
                                             </li>
                                             <li class="list-group-item d-flex align-items-center flex-grow-1 border-0 bg-transparent"
-                                                v-bind:style="{ 'background-color': tasks[index].subTasks[subIndex].subTaskDone ? completedColor : '' }">
-                                                <p class="lead fw-normal mb-0" v-if="!tasks[index].subTasks[subIndex].subTaskEditMode">{{ tasks[index].subTasks[subIndex].txt }}</p>
+                                                v-bind:style="{ 'background-color': task.subTasks[subIndex].subTaskDone ? completedColor : '' }">
+                                                <p class="lead fw-normal mb-0" v-if="!task.subTasks[subIndex].subTaskEditMode">{{ task.subTasks[subIndex].txt }}</p>
                                                 <div v-else >
                                                     <input 
                                                         type="text"                                       
                                                         style="height: 40px; width: 300px; border: none; border-radius: 4px; margin-right: 10px;" 
-                                                        v-model="tasks[index].subTasks[subIndex].subTaskEditedValue" 
-                                                        :placeholder="tasks[index].subTasks[subIndex].txt"                                                     
+                                                        v-model="task.subTasks[subIndex].subTaskEditedValue" 
+                                                        :placeholder="task.subTasks[subIndex].txt"                                                     
                                                     />   
                                                     <button type="button" class="btn btn-primary" id="save-edited-subtask" 
                                                             @click="saveEditedSubtask(index, subIndex)" >Save
@@ -220,7 +220,7 @@
                                                 </div>
                                                 <div class="text-end text-muted">
                                                     <a href="#!" class="text-muted" data-mdb-toggle="tooltip" title="Created date">
-                                                        <p class="small mb-0"><i class="fas fa-info-circle me-2"></i>{{ tasks[index].subTasks[subIndex].date }}
+                                                        <p class="small mb-0"><i class="fas fa-info-circle me-2"></i>{{ task.subTasks[subIndex].date }}
                                                         </p>
                                                     </a>
                                                 </div>
@@ -311,7 +311,6 @@
                     editMode: this.editMode,
                     reminder: new Date(+new Date().setHours(0, 0, 0, 0) + 86400000).toLocaleDateString('fr-CA'),
                     subTasks: [],
-                    completedSubtasks: [],
                     subTaskTxt:'',
                 });
                 this.taskText = '';
@@ -348,11 +347,11 @@
             checkCompletedSubTask(parentIndex, childIndex) {
                 isChecked = !this.tasks[parentIndex].subTasks[childIndex].done;
                 if (isChecked) {
-                    // this.completedTasks.push(this.tasks[index]);
-                    this.tasks[parentIndex].completedSubtasks.push(this.tasks[parentIndex].subTasks[childIndex])
+                    console.log("yasss")
+                    this.completedTasks.push(this.tasks[parentIndex].subTasks[childIndex])
                 } else {
-                    // this.completedTasks.splice(this.tasks[index], 1);
-                    this.tasks[parentIndex].completedSubtasks.splice(this.tasks[parentIndex].subTasks[childIndex], 1)
+                    console.log("noooo")
+                    this.completedTasks.splice(this.tasks[parentIndex].subTasks[childIndex], 1)
 
                 }
             },
@@ -398,8 +397,9 @@
                 var completed = 0;
                 for (let i = 0; i < this.tasks.length; i++) { 
                     for (let n = 0; n < this.tasks[i].subTasks.length; n++) {
-                        if (this.tasks[i].subTasks[n].done) {
+                        if (this.tasks[i].subTasks[n].subTaskDone) {
                             completed++;
+                            console.log(n, "done")
                         }
                         total++;                       
                     }
