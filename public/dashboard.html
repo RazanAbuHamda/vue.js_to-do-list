@@ -38,6 +38,9 @@
     .task-done {
         background-color: #98fb98 !important;
     }
+    .subtask-done{
+        background-color: #98fb98 !important;
+    }
 
     .task-cancel {
         background-color: #fe3939 !important;
@@ -178,7 +181,8 @@
                                         <div class="subtask-sortable-list-item" v-for="(subTask,subIndex) in task.subTasks" >                                
                                             <ul class="list-group list-group-horizontal" 
                                                 v-bind:class="
-                                                        [{'task-done': task.subTasks[subIndex].subTaskDone}, 
+                                                        [{'task-done': task.done}, 
+                                                        {'subtask-done': task.subTasks[subIndex].subTaskDone},
                                                         {'task-cancel': task.subTasks[subIndex].subTaskCancel}]" >
                                             
                                                 <li class="list-group-item d-flex align-items-center ml-1 ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
@@ -326,7 +330,7 @@
                 isChecked = !this.tasks[index].done;
                 if (isChecked) {
                     this.tasks[index].completionDate = new Date();
-                    this.completedTasks.push(this.tasks[index]);
+                    this.completedTasks.push(this.tasks[index], this.task[index].subTasks);
                 } else {
                     this.completedTasks.splice(this.tasks[index], 1);
                 }
@@ -402,20 +406,34 @@
                 
             },
             completionPercentage() {
-                var total = this.tasks.length;
-                var completed = 0;
+                var totalTasks = this.tasks.length;
+                var totalSubtasks = this.tasks.reduce((acc, task) => acc + task.subTasks.length, 0);
+                var completedTasks = 0;
+                var completedSubtasks = 0;
+
                 for (let i = 0; i < this.tasks.length; i++) { 
-                    for (let n = 0; n < this.tasks[i].subTasks.length; n++) {
-                        if (this.tasks[i].subTasks[n].subTaskDone) {
-                            completed++;
-                            console.log(n, "done")
-                        }
-                        total++;                       
-                    }
                     if (this.tasks[i].done) {
-                        completed++;
-                    }
+                        completedTasks++;
+                        completedSubtasks += this.tasks[i].subTasks.length;
+                        // console.log(completed);
+                        continue;
+                    }else{
+                        for (let n = 0; n < this.tasks[i].subTasks.length; n++) {
+                            console.log("enetred 2nd loop")
+                            if (this.tasks[i].subTasks[n].subTaskDone) {
+                                console.log("enetred 1st if")
+                                completedSubtasks++;
+                                console.log(n, "done")
+                            }
+                        }   
+                    }                 
                 }
+
+                console.log("total",total);
+                console.log("completed",completedTasks);
+
+                var total = totalTasks + totalSubtasks;
+                var completed = completedTasks + completedSubtasks;
 
                 if (total === 0) {
                     return 0;
