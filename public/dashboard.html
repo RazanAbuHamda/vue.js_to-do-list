@@ -435,34 +435,44 @@
             completionInCurrentDayPercentage() {
                 const today = new Date();
                 let totalTasksInDay = 0;
+                let totalSubtasksInDay = 0;
                 let completedTasks = 0;
-                let completedSubtks = 0;
+                let completedSubtasks = 0;
 
                 for (let i = 0; i < this.tasks.length; i++) {
                     const taskDate = new Date(this.tasks[i].date);
-                    for (let n = 0; n < this.tasks[i].subTasks.length; n++) {
-                        const subTaskDate = new Date(this.tasks[i].subTasks[n].date);
-                        if (subTaskDate.getDate() === today.getDate() && subTaskDate.getMonth() === today.getMonth() && subTaskDate.getFullYear() === today.getFullYear()) {
-                            totalTasksInDay++;
-                            if (this.tasks[i].subTasks[n].subTaskDone) {
-                                completedTasks++;
-                            }
-                        }
-
-                    }
                     if (taskDate.getDate() === today.getDate() && taskDate.getMonth() === today.getMonth() && taskDate.getFullYear() === today.getFullYear()) {
                         totalTasksInDay++;
+                        totalSubtasksInDay = this.tasks.reduce((acc, task) => acc + task.subTasks.length, 0);
+
                         if (this.tasks[i].done) {
                             completedTasks++;
-                        }
-                    }
-                }                
+                            completedSubtasks += this.tasks[i].subTasks.length;
+                        }else{
+                            for (let n = 0; n < this.tasks[i].subTasks.length; n++) {
+                                // const subTaskDate = new Date(this.tasks[i].subTasks[n].date);
+                            // if (taskDate.getDate() === today.getDate() && taskDate.getMonth() === today.getMonth() && taskDate.getFullYear() === today.getFullYear()) {
+                            //     totalSubtasksInDay++;
+                                if (this.tasks[i].subTasks[n].subTaskDone) {
+                                    completedSubtasks++;
+                                }
+                            // }
 
+                            }  
+                        }
+                    }                                      
+                }                
+                console.log("completedSubtasks",completedSubtasks);
+                console.log("completedTasks",completedTasks);
+                console.log("totalTasksInDay",totalTasksInDay);
+                console.log("totalSubtasksInDay",totalSubtasksInDay);
+                
                 if (totalTasksInDay === 0) {
                     return 0;
                 }
-
-                return Math.round((completedTasks / totalTasksInDay) * 100);
+                totalCompleted = completedTasks + completedSubtasks;
+                total = totalSubtasksInDay + totalTasksInDay;
+                return Math.round((totalCompleted / total) * 100);
             }
             ,
             isPastDue: function () {
