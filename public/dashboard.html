@@ -417,19 +417,12 @@
                         completedSubtasks += this.tasks[i].subTasks.length;
                     }else{
                         for (let n = 0; n < this.tasks[i].subTasks.length; n++) {
-                            console.log("enetred 2nd loop")
                             if (this.tasks[i].subTasks[n].subTaskDone) {
-                                console.log("enetred 1st if")
                                 completedSubtasks++;
-                                console.log(n, "done")
                             }
                         }   
                     }                 
                 }
-
-                console.log("total",total);
-                console.log("completed",completedTasks);
-
                 var total = totalTasks + totalSubtasks;
                 var completed = completedTasks + completedSubtasks;
 
@@ -443,6 +436,7 @@
                 const today = new Date();
                 let totalTasksInDay = 0;
                 let completedTasks = 0;
+                let completedSubtks = 0;
 
                 for (let i = 0; i < this.tasks.length; i++) {
                     const taskDate = new Date(this.tasks[i].date);
