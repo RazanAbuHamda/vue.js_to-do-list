@@ -118,21 +118,41 @@
 
 
 <script type="text/javascript" src="js/mdb.min.js"></script>
-
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script type="text/javascript">
-  var vm = new Vue({
-    el: "#signup-div",
-    data:{
-      fname:'',
-      lname:'',
-      email:'',
-      password:'',
-    },
-    methods: {
-      registerUser(){
-        // using the API later to insert user's data into the database
+ var signup = new Vue({
+  el: "#signup",
+  data() {
+    return {
+      name: null,
+      email: null,
+      password: null
+    };
+  },
+  methods: {
+    validateSignup(e) {
+      try {
+        console.warn(this.data);
+        axios
+          .post("http://localhost:3000/api/user/register/", {
+            name: this.name,
+            email: this.email,
+            password: this.password
+          })
+          .then(result => {
+            console.log(result.data);
+            window.location.href = 'http://localhost:8080/index.html';
+          })
+          .catch(error => {
+            console.log(error);
+          });
+        e.preventDefault();
+      } catch (e) {
+        console.log(e);
       }
-    },
+    }
+  }
+,
     mounted(){
       // this will check 
     }
