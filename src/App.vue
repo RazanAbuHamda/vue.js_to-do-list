@@ -5,15 +5,25 @@
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
+// import axios from "axios"
 
 export default {
   name: 'App',
-  components: {
+  components(){
     HelloWorld
-  }
+  },
+  // data(){
+  //   return{
+  //     userData:[]
+  //   }
+  // },
+  // async mounted(){
+  //   let userData = await axios.get("http://localhost:3000/api/user/login/")
+  //   console.log(userData.data.data);
+  //   this.userData = userData.data.data
+  // }
 }
 </script>
-
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
